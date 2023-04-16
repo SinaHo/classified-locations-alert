@@ -25,7 +25,7 @@ public class LocationService extends Service {
 //
 //    }
 
-    private final int LOCATION_REFRESH_TIME = 5000; // 5 seconds to update
+    private final int LOCATION_REFRESH_TIME = 400; // 5 seconds to update
     private final int LOCATION_REFRESH_DISTANCE = 1; // 1 meters to update
 
     private void createNotificationChannel() {
@@ -61,7 +61,9 @@ public class LocationService extends Service {
 
         @Override
         public void onLocationChanged(final Location location) {
-            long color = LocationDetector.getLocationColor(location.getLongitude(), location.getLatitude());
+            LocationView view = LocationDetector.getLocationView(location.getLongitude(), location.getLatitude());
+            long color = view.color;
+            sendDataToActivity(view);
             Log.i("Color", Long.toString(color, 10));
             if (color != lastColor) {
                 if (color == Color.BLUE) {
@@ -76,7 +78,13 @@ public class LocationService extends Service {
         }
     };
 
-
+    private void sendDataToActivity(LocationView view)
+    {
+        Intent sendView = new Intent();
+        sendView.setAction("LOCATION_ACTION");
+        sendView.putExtra( "LOCATION_VALUE",view.toString());
+        sendBroadcast(sendView);
+    }
     @Override
     public void onCreate() {
         Log.i("SERVICE_LC", "Created");

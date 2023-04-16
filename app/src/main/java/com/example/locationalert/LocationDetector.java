@@ -21,7 +21,7 @@ public class LocationDetector {
     private LocationDetector(Context context, double ulLong, double ulLat, double brLong, double brLat) {
 
         this.context = context;
-        image = BitmapFactory.decodeResource(context.getResources(), R.raw.areas);
+        image = BitmapFactory.decodeResource(context.getResources(), R.drawable.areas);
         upperLeftLongitude = ulLong;
         upperLeftLatitude = ulLat;
         bottomRightLongitude = brLong;
@@ -36,48 +36,65 @@ public class LocationDetector {
     }
 
     private static int calculateFraction(double a, double a1, double a2, int length) {
-        return (int) Math.abs(Math.floor((a - a2) / (a2 - a1) * length)) ;
+        return (int) Math.abs(Math.floor((a - a2) / (a2 - a1) * length));
     }
 
-    private long _getPixel(double longitude, double latitude) {
+    private LocationView _getPixel(double longitude, double latitude) {
         int height = image.getHeight();
         int width = image.getWidth();
         int x = calculateFraction(longitude, bottomRightLongitude, upperLeftLongitude, width);
         int y = calculateFraction(latitude, bottomRightLatitude, upperLeftLatitude, height);
 //        return new int[]{x ,y,image.getPixel(10,10)};
-        Log.i("Pixel", String.format("width: %s from %s and height: %s from %s", x,width,y,height));
-        int pixel = image.getPixel(x,y);
+        Log.i("Pixel", String.format("width: %s from %s and height: %s from %s", x, width, y, height));
+        int pixel = image.getPixel(x, y);
         int redValue = Color.red(pixel);
         int blueValue = Color.blue(pixel);
         int greenValue = Color.green(pixel);
-        if (redValue == 255 && blueValue ==0){
-            return Color.RED;
-        }else if (
-                blueValue == 255 && redValue==0
-        ){
-            return Color.BLUE;
-        }else {
-            return Color.WHITE;
+        LocationView view = new LocationView();
+        view.rowPixel = y;
+        view.columnPixel = x;
+        if (redValue == 255 && blueValue == 0) {
+            view.color = Color.RED;
+        } else if (
+                blueValue == 255 && redValue == 0
+        ) {
+            view.color =  Color.BLUE;
+        } else {
+            view.color = Color.WHITE;
         }
-//        return image.getPixel(x, y);
+        return view;
     }
 
-    public static long getLocationColor(double longitude, double latitude) {
-        Log.d("TEST", Integer.toString(Color.WHITE));
-        if (longitude > singletonDetector.bottomRightLongitude ){
+    private static boolean checkBoundary(double longitude, double latitude){
+        if (longitude > singletonDetector.bottomRightLongitude) {
             Log.e("Boundary", "s1 - went east");
-            return Color.WHITE;
-        }if (longitude < singletonDetector.upperLeftLongitude ){
+            return false;
+        }
+        if (longitude < singletonDetector.upperLeftLongitude) {
             Log.e("Boundary", "s2 - went west");
-            return Color.WHITE;
-        }if (latitude< singletonDetector.bottomRightLatitude ){
+            return false;
+        }
+        if (latitude < singletonDetector.bottomRightLatitude) {
             Log.e("Boundary", "s3 - went south");
-            return Color.WHITE;
-        }if (latitude> singletonDetector.upperLeftLatitude){
+            return false;
+        }
+        if (latitude > singletonDetector.upperLeftLatitude) {
             Log.e("Boundary", "s4 - went north");
-            return Color.WHITE;
+            return false;
+        }
+        return true;
+    }
+    public static long getLocationColor(double longitude, double latitude) {
+        if (!checkBoundary(longitude,latitude)) return Color.WHITE;
+        return singletonDetector._getPixel(longitude, latitude).color;
+    }
+
+    public static LocationView getLocationView(double longitude, double latitude){
+        if (!checkBoundary(longitude, latitude)){
+            return new LocationView(-1,-1,Color.WHITE);
         }
         return singletonDetector._getPixel(longitude, latitude);
     }
+
 
 }

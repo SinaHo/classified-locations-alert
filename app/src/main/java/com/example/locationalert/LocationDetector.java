@@ -44,8 +44,6 @@ public class LocationDetector {
         int width = image.getWidth();
         int x = calculateFraction(longitude, bottomRightLongitude, upperLeftLongitude, width);
         int y = calculateFraction(latitude, bottomRightLatitude, upperLeftLatitude, height);
-//        return new int[]{x ,y,image.getPixel(10,10)};
-        Log.i("Pixel", String.format("width: %s from %s and height: %s from %s", x, width, y, height));
         int pixel = image.getPixel(x, y);
         int redValue = Color.red(pixel);
         int blueValue = Color.blue(pixel);
@@ -84,6 +82,8 @@ public class LocationDetector {
         }
         return true;
     }
+
+
     public static long getLocationColor(double longitude, double latitude) {
         if (!checkBoundary(longitude,latitude)) return Color.WHITE;
         return singletonDetector._getPixel(longitude, latitude).color;
@@ -95,6 +95,7 @@ public class LocationDetector {
         }
         return singletonDetector._getPixel(longitude, latitude);
     }
+
 
 
 }

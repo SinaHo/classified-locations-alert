@@ -26,7 +26,8 @@
             android:name=".LocationService"
             android:enabled="true"
             android:exported="true"
-            android:process=":process" />
+            android:process=":process"
+            android:foregroundServiceType="location"/>
 
         <activity
             android:name=".MainActivity"

@@ -45,64 +45,29 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
     private LocationDataReceiver locationReceiver;
 
-    class LocationDataReceiver extends BroadcastReceiver {
+    private class LocationDataReceiver extends BroadcastReceiver {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-
             if (intent.getAction().equals("LOCATION_ACTION")) {
                 String locationData = intent.getStringExtra("LOCATION_VALUE");
+                Log.i("LOCATION", locationData);
                 LocationView view = LocationView.parseView(locationData);
-                Log.i("LOCATION_VIEW_STRING", view.toString());
-                Log.i("LOCATION_DATA", locationData);
                 TextView mainText = (TextView) findViewById(R.id.textview_first);
                 mainText.setText(locationData);
                 ImageView imgView = (ImageView) findViewById(R.id.areasImage);
-                int x = view.columnPixel;
-                int y = view.rowPixel;
                 Bitmap image = BitmapFactory.decodeResource(context.getResources(), R.drawable.areas);
-                image = image.copy(Bitmap.Config.ARGB_8888, true);
-                Log.i("IMAGE_MANIPULATION", "Image generated");
-                int i, j;
-                if (x > -1 && y > -1) {
-
-                    for (i = Math.max(x - 50, 0); i < Math.min(image.getWidth(), x + 50); i++) {
-                        for (j = Math.max(y - 50, 0); j < Math.min(image.getHeight(), y + 50); j++) {
-                            image.setPixel(i, j, ContextCompat.getColor(context, R.color.yellow_600));
-                        }
-                    }
-                    Log.i("IMAGE_MANIPULATION", "Image edited");
-                }
+                image = view.setLocationMarkerOnImage(image, context);
                 imgView.setImageBitmap(image);
-                Log.i("IMAGE_MANIPULATION", "Image set");
             }
 
         }
 
     }
 
-//    private int notificationId = 0;
-//    private long lastColor = Color.WHITE;
-//    public final LocationListener mLocationListener = new LocationListener() {
-//        @Override
-//        public void onLocationChanged(final Location location) {
-//            long color = LocationDetector.getLocationColor(location.getLongitude(), location.getLatitude());
-//            TextView mainText = (TextView) findViewById(R.id.textview_first);
-//            mainText.setText(String.format("%s : %s \ncolor is : %s\nis mock %s, %s", location.getLatitude(), location.getLongitude(), color == Color.WHITE ? "White" : color == Color.BLUE ? "Blue" : "RED ", location.isFromMockProvider(), location.getProvider()));
-//            Log.i("Color", Long.toString(color, 10));
-//            if (color != lastColor) {
-//                if (color == Color.BLUE) {
-//                    notificationManager.notify(notificationId++, blueAreaBuilder.build());
-//                } else if (color == Color.RED) {
-//                    notificationManager.notify(notificationId++, redAreaBuilder.build());
-//                }
-//                lastColor = color;
-//            }
-//        }
-//    };
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d("MainActivity", "Activity created");
         super.onCreate(savedInstanceState);
         locationReceiver = new LocationDataReceiver();
         registerReceiver(locationReceiver, new IntentFilter("LOCATION_ACTION"));
@@ -120,10 +85,12 @@ public class MainActivity extends AppCompatActivity {
             requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
             accessGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
         }
+        Log.d("PERMISSION", accessGranted ? "Location access granted" : "Location access not granted");
+
         Intent LocationServiceIntent = new Intent(this, LocationService.class);
 
         startService(LocationServiceIntent);
-
+        Log.d("LOCATION_SERVICE", "After start");
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 //            startForegroundService(LocationServiceIntent);
 //        } else {

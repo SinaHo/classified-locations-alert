@@ -1,5 +1,7 @@
 package com.example.locationalert;
 
+import static android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION;
+
 import android.Manifest;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -62,9 +64,9 @@ public class LocationService extends Service {
         @Override
         public void onLocationChanged(final Location location) {
             LocationView view = LocationDetector.getLocationView(location.getLongitude(), location.getLatitude());
+            Log.i("LOCATION", view.toString());
             long color = view.color;
             sendDataToActivity(view);
-            Log.i("Color", Long.toString(color, 10));
             if (color != lastColor) {
                 if (color == Color.BLUE) {
                     blueAreaBuilder.setWhen(System.currentTimeMillis());
@@ -80,6 +82,7 @@ public class LocationService extends Service {
 
     private void sendDataToActivity(LocationView view)
     {
+        Log.i("LOCATION", view.toString());
         Intent sendView = new Intent();
         sendView.setAction("LOCATION_ACTION");
         sendView.putExtra( "LOCATION_VALUE",view.toString());
@@ -87,8 +90,9 @@ public class LocationService extends Service {
     }
     @Override
     public void onCreate() {
-        Log.i("SERVICE_LC", "Created");
         notificationManager = NotificationManagerCompat.from(this);
+        sendDataToActivity(new LocationView(-7,-3,-45));
+        Log.i("LOCATION_SERVICE", "Location service created");
         LocationDetector.InitSingleton(this, 46.326797, 38.055580, 46.328095, 38.055017);
         redAreaBuilder = new NotificationCompat.Builder(this, "0x1")
                 .setSmallIcon(R.drawable.ic_launcher_background)
@@ -108,30 +112,32 @@ public class LocationService extends Service {
                 .setPriority(NotificationManager.IMPORTANCE_LOW)
                 .setCategory(Notification.CATEGORY_SERVICE)
                 .setOngoing(true);
-        startForeground(9999, staticNotifications.build());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            startForeground(9999, staticNotifications.build(),FOREGROUND_SERVICE_TYPE_LOCATION);
+        }else{
+            startForeground(9999, staticNotifications.build());
+
+        }
         LocationManager mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         boolean accessGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+
         if (accessGranted) {
             mLocationManager.requestLocationUpdates(LocationManager.FUSED_PROVIDER, LOCATION_REFRESH_TIME,
                     LOCATION_REFRESH_DISTANCE, mLocationListener);
         }
+        Log.i("PERMISSION", accessGranted ? "Location access granted" : "Location access not granted");
 
         super.onCreate();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-//        createNotificationChannel();
-        Log.i("SERVICE_LC", "Started");
-
-
         return START_STICKY;
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.i("SERVICE_LC", "Destroyed");
     }
 
     @Override

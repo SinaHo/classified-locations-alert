@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="colors">
+        <item color="#f8fe87">Q(t2) - Young terraces</item>
+        <item color="#fed8c3">Q(t1) - Old terraces</item>
+        <item color="#773f3f">Q(v) - Basaltic lawa flows</item>
+        <item color="#f5fe4b">QPl(1) - Lacustrine deposits (sand, silt and clay)</item>
+        <item color="#777369">QPl(c) - Conglomobrate and marl</item>
+        <item color="#a5feaf">Ng(c) - Red coglomerate and sandy conglomerate</item>
+        <item color="#fec4a5">Ng(t) - Andesite to trachyand esite flows with parly cone like structure</item>
+        <item color="#d0c3fe">Ng(i) - Ignimbrite</item>
+        <item color="#0000ff">Ng(i) - Ignimbrite</item>
+        <item color="#849592">M(s) - Sandstone, siltstone,amrl and thin bedded fossiliferous limstone</item>
+        <item color="#fed269">M(m)- Gypsiferous marl , marly limstone and gypsum</item>
+        <item color="#66774d">M(c) - Red conglomerate and marl</item>
+        <item color="#4a7db3">rh - Rhyolitic dome</item>
+        <item color="#fe9e69">E(pa) - Andesitic basalt, pyroxene andeste</item>
+        <item color="#91b35f">E(t) - Trachyandesite to trachytoe bearing pseudomorphosed analcime</item>
+        <item color="#a5d0fe">E(d) - Dacite to rhyodacite tuff,ignimbrite</item>
+        <item color="#774d4e">E(b) - Olivine basalt ,basaltic andesite ,pyroxene bearing andesite</item>
+        <item color="#c2fe69">E(l) - Nummulitic limstone , calcareous tuff</item>
+        <item color="#ac9600">E(v2) - Volcanosedimentary rocks ,andesite and dacitice lavas, limstone lenses</item>
+        <item color="#61773f">E(a) - Megaporphyritic to porphyritic andesite and trachyandestie</item>
+        <item color="#4d7770">E(v1) - Volcanosedimentary rocks,andesite and daciic lavas</item>
+        <item color="#592f2f">E(P) - Tuff breccia , ignimbrite and subordinate peroxene andesite to trchvandesite</item>
+        <item color="#91b35f">PE(c)- Violet volcanosedimantryconglomerate and breccia</item>
+        <item color="#4d7752">PE(v) - Volcanosedimentary rocks , porphyritic andesite , trachyandesite associated with basic dykes .</item>
+        <item color="#4d7770">PE(m) - Gypsiferous marl, calcareous sandstone and thin bedded limestone.</item>
+        <item color="#23772c">K(m)(2) - Silty shale ,marl and limestone</item>
+        <item color="#69fe79">K(1)(2) - Micritic limestone with basal conglomerate</item>
+        <item color="#3f776d">K(v2)(2) - Porphyritic andesites, olivine basalt associated with pyroclastic rocks. And K(v1)(1) - Acidic tuff intercalated with shale and some basic volcanics.</item>
+        <item color="#fe878a">gr(k) - Khan khandi biotite granite to granodiorite</item>
+        <item color="#fe4b4f">gr(a) - Anzan alkhali granite to horn blande biotite granodiorite</item>
+        <item color="#fe5a00">sn(r) - Razgah monzodiorite bearing pseudoleucite</item>
+    </array>
+</resources>

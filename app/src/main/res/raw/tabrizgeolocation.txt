@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="upperLeftLatitude">
+        38.1238
+    </attr>
+    <attr name="upperLeftLongitude">
+        46.2061
+    </attr>
+    <attr name="bottomRightLatitude">
+        38.0167
+    </attr>
+    <attr name="bottomRightLongitude">
+        46.4001
+    </attr>
+</resources>
+
+
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="upperLeftLatitude">
+        38.30
+    </attr>
+    <attr name="upperLeftLongitude">
+        47.00
+    </attr>
+    <attr name="bottomRightLatitude">
+        38.00
+    </attr>
+    <attr name="bottomRightLongitude">
+        47.30
+    </attr>
+</resources>

@@ -51,12 +51,11 @@ public class MainActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals("LOCATION_ACTION")) {
                 String locationData = intent.getStringExtra("LOCATION_VALUE");
-                Log.i("LOCATION", locationData);
                 LocationView view = LocationView.parseView(locationData);
                 TextView mainText = (TextView) findViewById(R.id.textview_first);
-                mainText.setText(locationData);
+                mainText.setText(view.getDescription());
                 ImageView imgView = (ImageView) findViewById(R.id.areasImage);
-                Bitmap image = BitmapFactory.decodeResource(context.getResources(), R.drawable.areas);
+                Bitmap image = BitmapFactory.decodeResource(context.getResources(), R.drawable.tabriz);
                 image = view.setLocationMarkerOnImage(image, context);
                 imgView.setImageBitmap(image);
             }
@@ -69,9 +68,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         Log.d("MainActivity", "Activity created");
         super.onCreate(savedInstanceState);
+        LocationDetector.InitSingleton(this);
         locationReceiver = new LocationDataReceiver();
         registerReceiver(locationReceiver, new IntentFilter("LOCATION_ACTION"));
-
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
@@ -85,7 +84,6 @@ public class MainActivity extends AppCompatActivity {
             requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
             accessGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
         }
-        Log.d("PERMISSION", accessGranted ? "Location access granted" : "Location access not granted");
 
         Intent LocationServiceIntent = new Intent(this, LocationService.class);
 

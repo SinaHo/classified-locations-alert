@@ -39,6 +39,6 @@
         app:layout_constraintHorizontal_bias="0.488"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textview_first"
-        android:src="@drawable/areas"
+        android:src="@drawable/tabriz"
         android:contentDescription="Areas Image"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

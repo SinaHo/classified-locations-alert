@@ -54,6 +54,7 @@ public class LocationService extends Service {
     private NotificationManagerCompat notificationManager;
     private NotificationCompat.Builder redAreaBuilder;
     private NotificationCompat.Builder blueAreaBuilder;
+    private NotificationCompat.Builder notificationBuilder;
     private int notificationId = 0;
 
 
@@ -64,11 +65,12 @@ public class LocationService extends Service {
         @Override
         public void onLocationChanged(final Location location) {
             LocationView view = LocationDetector.getLocationView(location.getLongitude(), location.getLatitude());
-            Log.i("LOCATION", view.toString());
             long color = view.color;
             sendDataToActivity(view);
             if (color != lastColor) {
                 if (color == Color.BLUE) {
+                    notificationBuilder.setWhen(System.currentTimeMillis());
+                    notificationBuilder.setContentText("This is the blue area");
                     blueAreaBuilder.setWhen(System.currentTimeMillis());
                     notificationManager.notify(notificationId++, blueAreaBuilder.build());
                 } else if (color == Color.RED) {
@@ -80,20 +82,19 @@ public class LocationService extends Service {
         }
     };
 
-    private void sendDataToActivity(LocationView view)
-    {
-        Log.i("LOCATION", view.toString());
+    private void sendDataToActivity(LocationView view) {
         Intent sendView = new Intent();
         sendView.setAction("LOCATION_ACTION");
-        sendView.putExtra( "LOCATION_VALUE",view.toString());
+        sendView.putExtra("LOCATION_VALUE", view.toString());
         sendBroadcast(sendView);
     }
+
     @Override
     public void onCreate() {
         notificationManager = NotificationManagerCompat.from(this);
-        sendDataToActivity(new LocationView(-7,-3,-45));
-        Log.i("LOCATION_SERVICE", "Location service created");
-        LocationDetector.InitSingleton(this, 46.326797, 38.055580, 46.328095, 38.055017);
+        sendDataToActivity(new LocationView(-7, -3, -45));
+//        LocationDetector.InitSingleton(this, 46.326797, 38.055580, 46.328095, 38.055017);
+        LocationDetector.InitSingleton(this);
         redAreaBuilder = new NotificationCompat.Builder(this, "0x1")
                 .setSmallIcon(R.drawable.ic_launcher_background)
                 .setContentTitle("RED AREA!")
@@ -105,6 +106,12 @@ public class LocationService extends Service {
                 .setContentTitle("BLUE AREA!")
                 .setContentText("You have just entered the blue area.")
                 .setAutoCancel(true);
+        notificationBuilder = new NotificationCompat.Builder(this, "0x1")
+                .setSmallIcon(R.drawable.ic_launcher_background)
+                .setContentTitle("Entered new area!")
+                .setContentText("You have just entered a new area.")
+                .setAutoCancel(true);
+
         NotificationCompat.Builder staticNotifications = new NotificationCompat.Builder(this, "0x1")
                 .setSmallIcon(R.drawable.ic_launcher_background)
                 .setAutoCancel(false)
@@ -113,8 +120,8 @@ public class LocationService extends Service {
                 .setCategory(Notification.CATEGORY_SERVICE)
                 .setOngoing(true);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            startForeground(9999, staticNotifications.build(),FOREGROUND_SERVICE_TYPE_LOCATION);
-        }else{
+            startForeground(9999, staticNotifications.build(), FOREGROUND_SERVICE_TYPE_LOCATION);
+        } else {
             startForeground(9999, staticNotifications.build());
 
         }
@@ -125,7 +132,6 @@ public class LocationService extends Service {
             mLocationManager.requestLocationUpdates(LocationManager.FUSED_PROVIDER, LOCATION_REFRESH_TIME,
                     LOCATION_REFRESH_DISTANCE, mLocationListener);
         }
-        Log.i("PERMISSION", accessGranted ? "Location access granted" : "Location access not granted");
 
         super.onCreate();
     }

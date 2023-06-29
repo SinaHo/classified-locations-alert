@@ -15,6 +15,8 @@ import android.os.Build;
 import android.util.Log;
 
 import org.xmlpull.v1.XmlPullParserException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class LocationDetector {
 
@@ -136,6 +138,30 @@ public class LocationDetector {
     private static int calculateFraction(double a, double a1, double a2, int length) {
         return (int) Math.abs(Math.floor((a - a2) / (a2 - a1) * length));
     }
+    private static int mostRepeated(int[] arr){
+        Map<Integer, Integer> frequencyMap = new HashMap<>();
+
+        // Iterate over the array and update the frequency count
+        for (int num : arr) {
+            frequencyMap.put(num, frequencyMap.getOrDefault(num, 0) + 1);
+        }
+
+        int mostRepeatedElement = 0;
+        int maxFrequency = 0;
+
+        // Find the element with the maximum frequency
+        for (Map.Entry<Integer, Integer> entry : frequencyMap.entrySet()) {
+            int num = entry.getKey();
+            int frequency = entry.getValue();
+
+            if (frequency > maxFrequency) {
+                maxFrequency = frequency;
+                mostRepeatedElement = num;
+            }
+        }
+
+        return mostRepeatedElement;
+    }
 
     private LocationView _getPixel(double longitude, double latitude) {
         int height = image.getHeight();
@@ -143,13 +169,21 @@ public class LocationDetector {
         int x = calculateFraction(longitude, bottomRightLongitude, upperLeftLongitude, width);
         int y = calculateFraction(latitude, bottomRightLatitude, upperLeftLatitude, height);
         int pixel = image.getPixel(x, y);
+        int[] sorroundings = new int[26*26];
+        for (int i = -13; i<+13; i++){
+            for (int j = -13; j<+13; j++){
+                sorroundings[(i+13)*26 + j+13] = image.getPixel(x+i,y+j);
+            }
+        }
+        int repeatedPixel = mostRepeated(sorroundings);
+
         int redValue = Color.red(pixel);
         int blueValue = Color.blue(pixel);
         int greenValue = Color.green(pixel);
         LocationView view = new LocationView();
         view.rowPixel = y;
         view.columnPixel = x;
-        view.color = pixel;
+        view.color = repeatedPixel;
 //        if (redValue == 255 && blueValue == 0) {
 //            view.color = Color.RED;
 //        } else if (

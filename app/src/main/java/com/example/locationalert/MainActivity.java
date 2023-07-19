@@ -53,9 +53,10 @@ public class MainActivity extends AppCompatActivity {
                 String locationData = intent.getStringExtra("LOCATION_VALUE");
                 LocationView view = LocationView.parseView(locationData);
                 TextView mainText = (TextView) findViewById(R.id.textview_first);
-                mainText.setText(view.getDescription());
+                Log.d("DESC", view.getDescription());
+                mainText.setText(view.getDescription() + "Location Data :" + locationData);
                 ImageView imgView = (ImageView) findViewById(R.id.areasImage);
-                Bitmap image = BitmapFactory.decodeResource(context.getResources(), R.drawable.tabriz);
+                Bitmap image = BitmapFactory.decodeResource(context.getResources(), R.drawable.aharlow);
                 image = view.setLocationMarkerOnImage(image, context);
                 imgView.setImageBitmap(image);
             }

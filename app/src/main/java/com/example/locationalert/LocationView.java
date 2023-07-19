@@ -32,7 +32,7 @@ public class LocationView {
         String description = LocationDetector.singletonDetector.colorDict.get(color);
         Log.i("COLORMAP", String.valueOf(LocationDetector.singletonDetector.colorDict.keySet()));
         if (description == null) {
-            description = "Unknown location";
+            description = String.format("Color: %d; Colormap: %s, row %d ; colomn %d;",color ,String.valueOf(LocationDetector.singletonDetector.colorDict.keySet()), this.rowPixel, this.columnPixel);
         }
         return description;
     }

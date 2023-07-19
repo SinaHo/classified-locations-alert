@@ -16,7 +16,6 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
-import android.widget.TextView;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
@@ -29,6 +28,35 @@ public class LocationService extends Service {
 
     private final int LOCATION_REFRESH_TIME = 400; // 5 seconds to update
     private final int LOCATION_REFRESH_DISTANCE = 1; // 1 meters to update
+    private NotificationManagerCompat notificationManager;
+    private NotificationCompat.Builder redAreaBuilder;
+    private NotificationCompat.Builder blueAreaBuilder;
+    private NotificationCompat.Builder notificationBuilder;
+    private int notificationId = 0;
+    public final LocationListener mLocationListener = new LocationListener() {
+        private long lastColor;
+
+
+        @Override
+        public void onLocationChanged(final Location location) {
+            LocationView view = LocationDetector.getLocationView(location.getLongitude(), location.getLatitude());
+            long color = view.color;
+            Log.d("NEW_LOC", String.format(("%d, %d"), location.getLatitude(), location.getLongitude()));
+            sendDataToActivity(view);
+            if (color != lastColor) {
+                if (color == Color.BLUE) {
+                    notificationBuilder.setWhen(System.currentTimeMillis());
+                    notificationBuilder.setContentText("This is the blue area");
+                    blueAreaBuilder.setWhen(System.currentTimeMillis());
+                    notificationManager.notify(notificationId++, blueAreaBuilder.build());
+                } else if (color == Color.RED) {
+                    redAreaBuilder.setWhen(System.currentTimeMillis());
+                    notificationManager.notify(notificationId++, redAreaBuilder.build());
+                }
+                lastColor = color;
+            }
+        }
+    };
 
     private void createNotificationChannel() {
 
@@ -50,37 +78,6 @@ public class LocationService extends Service {
             notificationManager.createNotificationChannel(channel);
         }
     }
-
-    private NotificationManagerCompat notificationManager;
-    private NotificationCompat.Builder redAreaBuilder;
-    private NotificationCompat.Builder blueAreaBuilder;
-    private NotificationCompat.Builder notificationBuilder;
-    private int notificationId = 0;
-
-
-    public final LocationListener mLocationListener = new LocationListener() {
-        private long lastColor;
-
-
-        @Override
-        public void onLocationChanged(final Location location) {
-            LocationView view = LocationDetector.getLocationView(location.getLongitude(), location.getLatitude());
-            long color = view.color;
-            sendDataToActivity(view);
-            if (color != lastColor) {
-                if (color == Color.BLUE) {
-                    notificationBuilder.setWhen(System.currentTimeMillis());
-                    notificationBuilder.setContentText("This is the blue area");
-                    blueAreaBuilder.setWhen(System.currentTimeMillis());
-                    notificationManager.notify(notificationId++, blueAreaBuilder.build());
-                } else if (color == Color.RED) {
-                    redAreaBuilder.setWhen(System.currentTimeMillis());
-                    notificationManager.notify(notificationId++, redAreaBuilder.build());
-                }
-                lastColor = color;
-            }
-        }
-    };
 
     private void sendDataToActivity(LocationView view) {
         Intent sendView = new Intent();
@@ -123,7 +120,6 @@ public class LocationService extends Service {
             startForeground(9999, staticNotifications.build(), FOREGROUND_SERVICE_TYPE_LOCATION);
         } else {
             startForeground(9999, staticNotifications.build());
-
         }
         LocationManager mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         boolean accessGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;

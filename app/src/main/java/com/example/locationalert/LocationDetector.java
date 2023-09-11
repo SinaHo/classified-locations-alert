@@ -78,6 +78,15 @@ public class LocationDetector {
 //        return Math.sqrt(Math.pow(color1))
         return 0.0;
     }
+    private static double colorDistance(Long color1, Long color2) {
+        int red1 = (int) ((color1 >> 16) & 0xFF);
+        int green1 = (int) ((color1 >> 8) & 0xFF);
+        int blue1 = (int) (color1 & 0xFF);
+        int red2 = (int) ((color2 >> 16) & 0xFF);
+        int green2 = (int) ((color2 >> 8) & 0xFF);
+        int blue2 = (int) (color2 & 0xFF);
+        return Math.sqrt(Math.pow(blue1-blue2, 2) + Math.pow(red1-red2, 2) + Math.pow(green1-green2, 2));
+    }
 
     private static boolean colorMatch(Color color1, Long color2) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -109,35 +118,53 @@ public class LocationDetector {
     }
 
     private static int findNearestDefinedPixel(Bitmap image, int x, int y, HashMap<Long, String> colorDict) {
-        int height = image.getHeight();
-        int width = image.getWidth();
-        found = false;
-        maxK = 110;
-        Color tempColor;
-        ArrayList<Color> validColors = new ArrayList<>();
+        long current = (long) image.getPixel(x, y);
+        double minDistance = 450;
+        long color = 0;
+        double d;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            for (k = 0; k < maxK; k++) {
-                for (int i = x - (k - 1); i <= x + (k - 1); i++) {
-                    handleColor(Color.valueOf(image.getPixel(i, y - k)), colorDict, validColors);
-                    handleColor(Color.valueOf(image.getPixel(i, y + k)), colorDict, validColors);
+            for (long definedColor : colorDict.keySet()) {
+                d = colorDistance((definedColor), (current));
+                Log.d("d", String.valueOf(d));
+                if (d < minDistance) {
+                    color = definedColor;
+                    minDistance = d;
                 }
-                for (int j = y - (k - 1); j <= y + (k - 1); j++) {
-                    handleColor(Color.valueOf(image.getPixel(x - k, j)), colorDict, validColors);
-                    handleColor(Color.valueOf(image.getPixel(x + k, j)), colorDict, validColors);
-                }
-                handleColor(Color.valueOf(image.getPixel(x + k, y+k)), colorDict, validColors);
-                handleColor(Color.valueOf(image.getPixel(x - k, y-k)), colorDict, validColors);
-                handleColor(Color.valueOf(image.getPixel(x + k, y-k)), colorDict, validColors);
-                handleColor(Color.valueOf(image.getPixel(x - k, y+k)), colorDict, validColors);
             }
         }
-        if (validColors.size() == 0){
-            return 0;
-        }
-        Integer[] items = new Integer[validColors.size()];
-        items = validColors.toArray(items);
+        return (int) color;
 
-        return mostRepeated(Arrays.stream(validColors.toArray(items)).mapToInt(Integer::intValue).toArray());
+
+        ////////////////////////////////////////
+//        int height = image.getHeight();
+//        int width = image.getWidth();
+//        found = false;
+//        maxK = 110;
+//        Color tempColor;
+//        ArrayList<Color> validColors = new ArrayList<>();
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            for (k = 0; k < maxK; k++) {
+//                for (int i = x - (k - 1); i <= x + (k - 1); i++) {
+//                    handleColor(Color.valueOf(image.getPixel(i, y - k)), colorDict, validColors);
+//                    handleColor(Color.valueOf(image.getPixel(i, y + k)), colorDict, validColors);
+//                }
+//                for (int j = y - (k - 1); j <= y + (k - 1); j++) {
+//                    handleColor(Color.valueOf(image.getPixel(x - k, j)), colorDict, validColors);
+//                    handleColor(Color.valueOf(image.getPixel(x + k, j)), colorDict, validColors);
+//                }
+//                handleColor(Color.valueOf(image.getPixel(x + k, y + k)), colorDict, validColors);
+//                handleColor(Color.valueOf(image.getPixel(x - k, y - k)), colorDict, validColors);
+//                handleColor(Color.valueOf(image.getPixel(x + k, y - k)), colorDict, validColors);
+//                handleColor(Color.valueOf(image.getPixel(x - k, y + k)), colorDict, validColors);
+//            }
+//        }
+//        if (validColors.size() == 0) {
+//            return 0;
+//        }
+//        Integer[] items = new Integer[validColors.size()];
+//        items = validColors.toArray(items);
+//
+//        return mostRepeated(Arrays.stream(validColors.toArray(items)).mapToInt(Integer::intValue).toArray());
     }
 
 
@@ -278,7 +305,7 @@ public class LocationDetector {
             }
         }
 //        int repeatedPixel = mostRepeated(sorroundings);
-        int meanPixel = findNearestDefinedPixel(image,x,y,colorDict);
+        int meanPixel = findNearestDefinedPixel(image, x, y, colorDict);
         int redValue = Color.red(pixel);
         int blueValue = Color.blue(pixel);
         int greenValue = Color.green(pixel);

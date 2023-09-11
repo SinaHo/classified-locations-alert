@@ -41,18 +41,12 @@ public class LocationService extends Service {
         public void onLocationChanged(final Location location) {
             LocationView view = LocationDetector.getLocationView(location.getLongitude(), location.getLatitude());
             long color = view.color;
-            Log.d("NEW_LOC", String.format(("%d, %d"), location.getLatitude(), location.getLongitude()));
+            Log.d("NEW_LOC", String.format(("%f, %f"), location.getLatitude(), location.getLongitude()));
             sendDataToActivity(view);
             if (color != lastColor) {
-                if (color == Color.BLUE) {
-                    notificationBuilder.setWhen(System.currentTimeMillis());
-                    notificationBuilder.setContentText("This is the blue area");
-                    blueAreaBuilder.setWhen(System.currentTimeMillis());
-                    notificationManager.notify(notificationId++, blueAreaBuilder.build());
-                } else if (color == Color.RED) {
-                    redAreaBuilder.setWhen(System.currentTimeMillis());
-                    notificationManager.notify(notificationId++, redAreaBuilder.build());
-                }
+                redAreaBuilder.setWhen(System.currentTimeMillis());
+                redAreaBuilder.setContentText(view.getDescription());
+                notificationManager.notify(notificationId++,redAreaBuilder.build());
                 lastColor = color;
             }
         }
@@ -66,7 +60,7 @@ public class LocationService extends Service {
             CharSequence name = getString(R.string.channel_name);
             String description = getString(R.string.channel_description);
             int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel("0x1", name, importance);
+            NotificationChannel channel = new NotificationChannel("0x2", name, importance);
             channel.setDescription(description);
             channel.enableLights(true);
             channel.enableVibration(true);
@@ -89,27 +83,23 @@ public class LocationService extends Service {
     @Override
     public void onCreate() {
         notificationManager = NotificationManagerCompat.from(this);
+        createNotificationChannel();
         sendDataToActivity(new LocationView(-7, -3, -45));
 //        LocationDetector.InitSingleton(this, 46.326797, 38.055580, 46.328095, 38.055017);
         LocationDetector.InitSingleton(this);
         redAreaBuilder = new NotificationCompat.Builder(this, "0x1")
                 .setSmallIcon(R.drawable.ic_launcher_background)
-                .setContentTitle("RED AREA!")
+                .setContentTitle("New Region!")
                 .setContentText("You have just entered the red area.")
                 .setDefaults(Notification.DEFAULT_VIBRATE | Notification.DEFAULT_SOUND | Notification.FLAG_SHOW_LIGHTS)
                 .setAutoCancel(false);
-        blueAreaBuilder = new NotificationCompat.Builder(this, "0x1")
-                .setSmallIcon(R.drawable.ic_launcher_background)
-                .setContentTitle("BLUE AREA!")
-                .setContentText("You have just entered the blue area.")
-                .setAutoCancel(true);
         notificationBuilder = new NotificationCompat.Builder(this, "0x1")
                 .setSmallIcon(R.drawable.ic_launcher_background)
                 .setContentTitle("Entered new area!")
                 .setContentText("You have just entered a new area.")
                 .setAutoCancel(true);
 
-        NotificationCompat.Builder staticNotifications = new NotificationCompat.Builder(this, "0x1")
+        NotificationCompat.Builder staticNotifications = new NotificationCompat.Builder(this, "0x2")
                 .setSmallIcon(R.drawable.ic_launcher_background)
                 .setAutoCancel(false)
                 .setContentTitle("App is running on foreground")

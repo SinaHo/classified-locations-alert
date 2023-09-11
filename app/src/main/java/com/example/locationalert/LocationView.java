@@ -32,7 +32,7 @@ public class LocationView {
         String description = LocationDetector.singletonDetector.colorDict.get(color);
         Log.i("COLORMAP", String.valueOf(LocationDetector.singletonDetector.colorDict.keySet()));
         if (description == null) {
-            description = String.format("Color: %d; Colormap: %s, row %d ; colomn %d;",color ,String.valueOf(LocationDetector.singletonDetector.colorDict.keySet()), this.rowPixel, this.columnPixel);
+            description = String.format("Color: %d; row %d ; colomn %d;",color ,this.rowPixel, this.columnPixel);
         }
         return description;
     }
@@ -43,8 +43,8 @@ public class LocationView {
         Bitmap image = _image.copy(Bitmap.Config.ARGB_8888, true);
         int i, j;
         if (x > -1 && y > -1) {
-            for (i = Math.max(x - 100, 0); i < Math.min(image.getWidth(), x + 100); i++) {
-                for (j = Math.max(y - 100, 0); j < Math.min(image.getHeight(), y + 100); j++) {
+            for (i = Math.max(x - 500, 0); i < Math.min(image.getWidth(), x + 500); i++) {
+                for (j = Math.max(y - 500, 0); j < Math.min(image.getHeight(), y + 500); j++) {
                     if (Math.pow(i - x, 2) + Math.pow(j - y, 2) < 225) {
                         image.setPixel(i, j, ContextCompat.getColor(context, R.color.yellow_600));
 
